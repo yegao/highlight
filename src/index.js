@@ -1,8 +1,7 @@
+// 找出source中的所有的字符串、注释、正则表达式
 const mountSource = source => {
-    // 找出source中的所有 ` " ' /* */ // / /
     const mountedList = [];
     let data = null;
-    // 对于正则的判断可能需要用到断言
     const regexp = /\`[\s\S]*?[\`$]|\".*?[\"$]|\'.*?[\'$]|\/\*[\s\S]*?(\*\/|$)|\/\/.*|(?<![a-zA-Z0-9\\])\/.*?(?<!\\)\/[a-zA-Z]*/g;
     while(data = regexp.exec(source)) {
         mountedList.push({chunk: data[0], index: data.index});
