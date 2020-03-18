@@ -130,51 +130,51 @@ const hl = element => {
 // test
 
 
-var source = `// 工具类方法
-/**
- * 在指定的索引位置前后插入标签
- * @param {[string]} chunks 
- * @param {[{index: number, value: string}]} execList 
- * @param {string} before 
- * @param {string} after
- */
-const insertTags = (chunks, execList, before, after) => {
-    if(!Object.prototype.toString.call(chunks) === "[object Array]") {
-        throw new TypeError("insertTags的第一个参数必须是字符串");
-    }
-    const len = chunks.length;
-    for(let i = 0; i < len-1; i++) {
-        chunks[i] += before + execList[i].value + after;
-    }
-    return chunks;
-}
+// var source = `// 工具类方法
+// /**
+//  * 在指定的索引位置前后插入标签
+//  * @param {[string]} chunks 
+//  * @param {[{index: number, value: string}]} execList 
+//  * @param {string} before 
+//  * @param {string} after
+//  */
+// const insertTags = (chunks, execList, before, after) => {
+//     if(!Object.prototype.toString.call(chunks) === "[object Array]") {
+//         throw new TypeError("insertTags的第一个参数必须是字符串");
+//     }
+//     const len = chunks.length;
+//     for(let i = 0; i < len-1; i++) {
+//         chunks[i] += before + execList[i].value + after;
+//     }
+//     return chunks;
+// }
 
-const languageMap = {
-    "JavaScript": {
-        marks: ["js", "javascript"],
-        rules: [
-            {
-                type: "backquote", // 反引号字符串 优先级最高， 因为即使注释在里面都会被忽略
-                regexp: /\\\`[\\s\\S\\n\\r]*?\\\`/g
-            },
-            {
-                type: "comment", // 注释
-                regexp: /\\/\\*[\\s\\S\\n\\r]*?\\*\\/|\\/\\/.*/g
-            }
-        ],
-        say:\`hello 
-        world!\`
-    }
-}
-`
+// const languageMap = {
+//     "JavaScript": {
+//         marks: ["js", "javascript"],
+//         rules: [
+//             {
+//                 type: "backquote", // 反引号字符串 优先级最高， 因为即使注释在里面都会被忽略
+//                 regexp: /\\\`[\\s\\S\\n\\r]*?\\\`/g
+//             },
+//             {
+//                 type: "comment", // 注释
+//                 regexp: /\\/\\*[\\s\\S\\n\\r]*?\\*\\/|\\/\\/.*/g
+//             }
+//         ],
+//         say:\`hello 
+//         world!\`
+//     }
+// }
+// `
 
-try {
-    setTimeout(function(){
-        throw new Error("死循环了！");
-    },1000)
-    console.log(hl(source))
-}
-catch(err){
-    console.log(err);
-}
-// export default hl;
+// try {
+//     setTimeout(function(){
+//         throw new Error("死循环了！");
+//     },1000)
+//     console.log(hl(source))
+// }
+// catch(err){
+//     console.log(err);
+// }
+export default hl;
