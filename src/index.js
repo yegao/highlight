@@ -4,11 +4,6 @@ const mountSource = source => {
     let data = null;
     // 对于正则的判断可能需要用到断言
     const regexp = /\`[\s\S]*?[\`$]|\".*?[\"$]|\'.*?[\'$]|\/\*[\s\S]*?(\*\/|$)|\/\/.*|(?<![a-zA-Z0-9\\])\/.*?(?<!\\)\/[a-zA-Z]*/g;
-    // 关键字 [\s\^]var\s|[\s\^]const[\s$]|[\s\^]let\s[\s$]
-    // 对象 \{[\s\S]*?\}
-    // 箭头函数 [\s\^]\=\>\s[\s$\{\}]|[\s\^]let\s[\s$]|[\s\^]let\s[\s$]
-    // 函数表达式 [\s\^]\=\>\s[\s$\{\}]|[\s\^]let\s[\s$]|[\s\^]let\s[\s$]
-    // 函数声明·· [\s\^]function\s*\(.*\)[\s\n]*\{[\s\S]*?\}
     while(data = regexp.exec(source)) {
         mountedList.push({chunk: data[0], index: data.index});
     }
@@ -41,13 +36,9 @@ const mountSource = source => {
         else if(/^\`/.test(chunk)) {
             list.push({type: 6, chunk, index});
         }
-        // 正则表达式
-        else if(/^\//.test(chunk)) {
-            list.push({type: 7, chunk, index});
-        }
-        // 正常代码
+        // 其他代码
         else {
-            list.push({type: 8, chunk, index});
+            list.push({type: 7, chunk, index});
         }
     }
     return list;
@@ -68,64 +59,17 @@ const transformToElement = (source, list, language="js") => {
     return result;
 }
 
-// // 工具类方法
-// /**
-//  * 在指定的索引位置前后插入标签
-//  * @param {[string]} chunks 
-//  * @param {[{index: number, value: string}]} execList 
-//  * @param {string} before 
-//  * @param {string} after
-//  */
-// const insertTags = (chunks, execList, before, after) => {
-//     if(!Object.prototype.toString.call(chunks) === "[object Array]") {
-//         throw new TypeError("insertTags的第一个参数必须是字符串");
-//     }
-//     const len = chunks.length;
-//     for(let i = 0; i < len-1; i++) {
-//         chunks[i] += before + execList[i].value + after;
-//     }
-//     return chunks;
-// }
-
-// const languageMap = {
-//     "JavaScript": {
-//         marks: ["js", "javascript"],
-//         rules: [
-//             {
-//                 type: "backquote", // 反引号字符串 优先级最高， 因为即使注释在里面都会被忽略
-//                 regexp: /\`[\s\S\n\r]*?\`/g
-//             },
-//             {
-//                 type: "comment", // 注释
-//                 regexp: /\/\*[\s\S\n\r]*?\*\/|\/\/.*/g
-//             }
-//         ]
-//     }
-// }
-
-// 获取准确的语言
-// const getLanguage = mark => {
-//     for(const language in languageMap) {
-//         const marks = languageMap[language].marks;
-//         if(~marks.indexOf(mark)) {
-//             return language;
-//         }
-//     }
-// }
-
-// const runRules = (source, rules, prefix="book-hl-") => {
-//     for(const rule of rules) {
-//         let list = [], item = null;
-//         // 直接将source分割成数组
-//         while(item = rule.regexp.exec(source)){
-//             list.push({index: item.index, value: item[0]});
-//         };
-//         let chunks = source.split(rule.regexp);
-//         chunks = insertTags(chunks, list, `<span class="${prefix}${rule.type}">`, `</span>`);
-//         source = chunks.join("");
-//     }
-//     return source;
-// }
+const getSourceFromElement = element => {
+    if(element instanceof Element && element.nodeType === 1) {
+        return element.textContent;
+    }
+    else if(typeof element === "string"){
+        return element;
+    }
+    else {
+        throw TypeError("getSourceFromElement的参数必须是字符串类型或者是节点类型");
+    }
+}
 
 const hl = element => {
     let source = "";
@@ -147,51 +91,4 @@ const hl = element => {
     return element;
 }
 
-// 测试
-
-var source = `// 工具类方法
-/**
- * 在指定的索引位置前后插入标签
- * @param {[string]} chunks 
- * @param {[{index: number, value: string}]} execList 
- * @param {string} before 
- * @param {string} after
- */
-const insertTags = (chunks, execList, before, after) => {
-    if(!Object.prototype.toString.call(chunks) === "[object Array]") {
-        throw new TypeError("insertTags的第一个参数必须是字符串");
-    }
-    const len = chunks.length;
-    for(let i = 0; i < len-1; i++) {
-        chunks[i] += before + execList[i].value + after;
-    }
-    return chunks;
-}
-
-const languageMap = {
-    "JavaScript": {
-        marks: ["js", "javascript"],
-        rules: [
-            {
-                type: "backquote", // 反引号字符串 优先级最高， 因为即使注释在里面都会被忽略
-                regexp: /\\\`[\\s\\S\\n\\r]*?\\\`/g
-            },
-            {
-                type: "comment", // 注释
-                regexp: /\\/\\*[\\s\\S\\n\\r]*?\\*\\/|\\/\\/.*/g
-            }
-        ],
-        say:\`hello 
-        world!\`
-    }
-}
-`
-
-try {
-    hl(source)
-    // console.log(hl(source))
-}
-catch(err){
-    console.log(err);
-}
-// export default hl;
+export default hl;
