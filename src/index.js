@@ -1,4 +1,4 @@
-const $Element = this.Element; // node.js环境中不存在Element，为方便测试先这样简单处理，后续要删除
+const $Element = this.Element || new Function(); // node.js环境中不存在Element，为方便测试先这样简单处理，后续要删除
 const getSourceFromElement = element => {
     if(element instanceof $Element && element.nodeType === 1) {
         return element.textContent;
