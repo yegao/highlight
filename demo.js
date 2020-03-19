@@ -1,3 +1,5 @@
+const hl = require("./src/index.js");
+
 // 测试例子
 var source = `// 工具类方法
 /**

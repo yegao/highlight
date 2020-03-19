@@ -1,5 +1,6 @@
+const $Element = this.Element; // node.js环境中不存在Element，为方便测试先这样简单处理，后续要删除
 const getSourceFromElement = element => {
-    if(element instanceof Element && element.nodeType === 1) {
+    if(element instanceof $Element && element.nodeType === 1) {
         return element.textContent;
     }
     else if(typeof element === "string"){
@@ -12,7 +13,6 @@ const getSourceFromElement = element => {
 
 // 得出这样的一个数组 [{chunk: "function x (){}", index: 8}, {chunk: "// hello world", index: 41}]
 const parse = (source, regexp) => {
-    console.log(source, regexp);
     const list = [];
     let data = null;
     while(data = regexp.exec(source)) {
@@ -115,7 +115,7 @@ const hl = element => {
         source = getSourceFromElement(element);
     }
     const result = onion(source, "js", ...onionArgs);
-    if(element instanceof Element && element.nodeType === 1) {
+    if(element instanceof $Element && element.nodeType === 1) {
         element.innerHTML = result;
     }
     else {
@@ -124,4 +124,6 @@ const hl = element => {
     return element;
 }
 
-export default hl;
+// export default hl; // 暂时调试，未发布，暂时先简单做成Node.js版本，后续再使用打包工具
+module.exports = hl;
+
