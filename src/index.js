@@ -10,6 +10,7 @@ const getSourceFromElement = element => {
     }
 }
 
+// 得出这样的一个数组 [{chunk: "function x (){}", index: 8}, {chunk: "// hello world", index: 41}]
 const parse = (source, regexp) => {
     console.log(source, regexp);
     const list = [];
@@ -17,21 +18,10 @@ const parse = (source, regexp) => {
     while(data = regexp.exec(source)) {
         list.push({chunk: data[0], index: data.index});
     }
-    // 得出这样的一个数组 [{chunk: "`", index: 8}, {chunk: "/*", index: 16}, {chunk: "*/", index: 18}, {chunk: """, index: 27}, {chunk: "'", index: 34}, {chunk: "//", index: 41}]
     return list;
 }
 
-// 包装方法名 (必须要在包装保留字之前处理)
-// 处理保留字符串
-// const x = x => {}
-// const x = (x) => {}
-// const x = function(){}
-// function x () {}
-// x()
-// x ()
-// const list = parse(source, /(?<=(var|const|let))[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=(\s*\=\s*)([\(\$_a-zA-Z0-9\,\)]*\=\>\s*\{|function\s*\())|(?=[$\s]*function[\s]*)[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g);
-
-// 包装保留字
+// 分别处理 字符串、注释、正则表达式 函数名（待完善） 
 const onion = (source, language, ...args) => {
     const [arg, ...rest] = args;
     if(!arg) {
@@ -104,6 +94,7 @@ const onionArgs = [
         regexp: /\`[\s\S]*?[\`$]|\".*?[\"$]|\'.*?[\'$]|\/\*[\s\S]*?(\*\/|$)|\/\/.*|(?<![a-zA-Z0-9\\])\/.*?(?<!\\)\/[a-zA-Z]*/g
     },
     {
+        // 函数名（未完）
         what: "function-variable",
         regexp: /(?<=[^\s]*function\s+)[\$_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g
         // (?<=(var|const|let))[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=(\s*\=\s*)([\(\$_a-zA-Z0-9\,\)]*\=\>\s*\{function\s*\())
