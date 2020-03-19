@@ -104,25 +104,22 @@ const onionArgs = [
         regexp: /\`[\s\S]*?[\`$]|\".*?[\"$]|\'.*?[\'$]|\/\*[\s\S]*?(\*\/|$)|\/\/.*|(?<![a-zA-Z0-9\\])\/.*?(?<!\\)\/[a-zA-Z]*/g
     },
     {
-        what: "function-variable",
-        regexp: /(?<=[^\s]*function\s+)[\$_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g
+        action() {
+
+        }
+        // what: "function-variable",
+        // regexp: /(?<=[^\s]*function\s+)[\$_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g
         // (?<=(var|const|let))[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=(\s*\=\s*)([\(\$_a-zA-Z0-9\,\)]*\=\>\s*\{function\s*\())
     },
     {
         // 保留字
         what: "reserved-word",
-        regexp: /(?<![_a-zA-Z0-9])(abstract|arguments|boolean|break|byte|case|catch|char|class|const|continue|debugger|default|delete|do|double|else|enum|eval|export|extends|false|final|finally|float|for|function|goto|if|implements|import|in|instanceof|int|interface|let|long|native|new|null|package|private|protected|public|return|short|static|super|switch|synchronized|this|throw|throws|transient|true|try|typeof|var|void|volatile|while|with|yield)(?![$_a-zA-Z0-9])/g
+        regexp: /(?<![_a-zA-Z0-9])(abstract|arguments|async|await|boolean|break|byte|case|catch|char|class|const|continue|debugger|default|delete|do|double|else|enum|eval|export|extends|false|final|finally|float|for|function|goto|if|implements|import|in|instanceof|int|interface|let|long|native|new|null|package|private|protected|public|return|short|static|super|switch|synchronized|this|throw|throws|transient|true|try|typeof|var|void|volatile|while|with|yield)(?![$_a-zA-Z0-9])/g
     }
 ]
 
 const hl = element => {
-    let source = "";
-    if(typeof element === "string") {
-        source = element;
-    }
-    else {
-        source = getSourceFromElement(element);
-    }
+    let source = getSourceFromElement(element);
     const result = onion(source, "js", ...onionArgs);
     if(element instanceof Element && element.nodeType === 1) {
         element.innerHTML = result;
