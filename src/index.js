@@ -1,5 +1,6 @@
+const $Element = this.Element || new Function(); // node.js环境中不存在Element，为方便测试先这样简单处理，后续要删除
 const getSourceFromElement = element => {
-    if(element instanceof Element && element.nodeType === 1) {
+    if(element instanceof $Element && element.nodeType === 1) {
         return element.textContent;
     }
     else if(typeof element === "string"){
@@ -10,28 +11,17 @@ const getSourceFromElement = element => {
     }
 }
 
+// 得出这样的一个数组 [{chunk: "function x (){}", index: 8}, {chunk: "// hello world", index: 41}]
 const parse = (source, regexp) => {
-    console.log(source, regexp);
     const list = [];
     let data = null;
     while(data = regexp.exec(source)) {
         list.push({chunk: data[0], index: data.index});
     }
-    // 得出这样的一个数组 [{chunk: "`", index: 8}, {chunk: "/*", index: 16}, {chunk: "*/", index: 18}, {chunk: """, index: 27}, {chunk: "'", index: 34}, {chunk: "//", index: 41}]
     return list;
 }
 
-// 包装方法名 (必须要在包装保留字之前处理)
-// 处理保留字符串
-// const x = x => {}
-// const x = (x) => {}
-// const x = function(){}
-// function x () {}
-// x()
-// x ()
-// const list = parse(source, /(?<=(var|const|let))[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=(\s*\=\s*)([\(\$_a-zA-Z0-9\,\)]*\=\>\s*\{|function\s*\())|(?=[$\s]*function[\s]*)[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g);
-
-// 包装保留字
+// 分别处理 字符串、注释、正则表达式 函数名（待完善） 
 const onion = (source, language, ...args) => {
     const [arg, ...rest] = args;
     if(!arg) {
@@ -104,11 +94,9 @@ const onionArgs = [
         regexp: /\`[\s\S]*?[\`$]|\".*?[\"$]|\'.*?[\'$]|\/\*[\s\S]*?(\*\/|$)|\/\/.*|(?<![a-zA-Z0-9\\])\/.*?(?<!\\)\/[a-zA-Z]*/g
     },
     {
-        action() {
-
-        }
-        // what: "function-variable",
-        // regexp: /(?<=[^\s]*function\s+)[\$_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g
+        // 函数名（未完）
+        what: "function-variable",
+        regexp: /(?<=[^\s]*function\s+)[\$_a-zA-Z][\$_a-zA-Z0-9]*(?=\s*\()/g
         // (?<=(var|const|let))[\$\s]+[_a-zA-Z][\$_a-zA-Z0-9]*(?=(\s*\=\s*)([\(\$_a-zA-Z0-9\,\)]*\=\>\s*\{function\s*\())
     },
     {
@@ -121,7 +109,7 @@ const onionArgs = [
 const hl = element => {
     let source = getSourceFromElement(element);
     const result = onion(source, "js", ...onionArgs);
-    if(element instanceof Element && element.nodeType === 1) {
+    if(element instanceof $Element && element.nodeType === 1) {
         element.innerHTML = result;
     }
     else {
@@ -130,4 +118,6 @@ const hl = element => {
     return element;
 }
 
-export default hl;
+// export default hl; // 暂时调试，未发布，暂时先简单做成Node.js版本，后续再使用打包工具
+module.exports = hl;
+
